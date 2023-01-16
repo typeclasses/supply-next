@@ -4,14 +4,15 @@ import Essentials
 
 import Control.Monad (replicateM)
 import Control.Monad.Trans.Writer.CPS (execWriter, tell, runWriter, Writer)
+import Data.Char (Char)
 import Data.Function (on)
 import Data.Monoid (Sum (..))
 import Data.Sequence (Seq)
 import Data.String (String)
-import Next (each, ProducerPlus)
-import Next.Stream (Stream (Stream))
+import Integer (Positive)
+import Next (each, ProducerPlus, Step (..), Stream (Stream), next)
 import Prelude (Integer, Int, IO, (+), show)
-import SupplyChain ((>->), (>-), Job)
+import SupplyChain ((>->), (>-), Job, order)
 import Test.Hspec (hspec, describe, it, shouldBe)
 
 import qualified Data.Char as Char
@@ -25,15 +26,37 @@ import qualified Data.List as List
 main :: IO ()
 main = hspec $ describe "Next" do
 
+    describe "Producer" do
+
+        it "each" do
+            let job = Next.each "abc" >- replicateM 4 (order next)
+            Job.eval job `shouldBe` [Item 'a', Item 'b', Item 'c', End]
+
     describe "Pipe" do
 
         let write :: Next.ConsumerPlus up (Writer (Seq item)) item ()
             write = Next.foldEffect (Fold.effect (Seq.singleton >>> tell))
 
-        it "group" do
+        describe "concat" do
+            let takeN n input = Next.each input >-> Next.concat >- replicateM n (order next)
+            it "1" do
+                let job = takeN 5 ["a", "bc", "def", "ghij"]
+                Job.eval job `shouldBe` [Item 'a', Item 'b', Item 'c', Item 'd', Item 'e']
+            it "2" do
+                let job = takeN 5 ["a", "bc"]
+                Job.eval job `shouldBe` [Item 'a', Item 'b', Item 'c', End, End]
+
+        describe "group" do
             let input = "Hrmm..."; grouped = [(1, 'H'), (1, 'r'), (2, 'm'), (3, '.')]
-                job = each input >-> Next.group >- write
-            execWriter (Job.run job) `shouldBe` Seq.fromList grouped
+            it "pure" do
+                let job = Next.each "Hrmm..." >-> Next.group >- Next.toList
+                Job.eval job `shouldBe` grouped
+            it "effectful" do
+                let job = each input >-> Next.group >- write
+                execWriter (Job.run job) `shouldBe` Seq.fromList grouped
+            it "empty" do
+                let job = Next.empty >-> Next.group >- Next.toList
+                shouldBe @[(Positive, Char)] (Job.eval job) []
 
         it "takeWhile" do
             let input = "PORKchOp"; capitalPrefix = "PORK"
