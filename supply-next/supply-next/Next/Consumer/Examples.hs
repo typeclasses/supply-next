@@ -35,8 +35,7 @@ foldJob EffectfulFold{ initial, step, extract } =
     effectful fold
 
 See "Fold.Effectful" -}
-foldEffect :: Monad action =>
-    EffectfulFold action item product
+foldEffect :: EffectfulFold action item product
     -> ConsumerPlus up action item product
 foldEffect f = foldJob (Fold.Effectful.hoist Job.perform f)
 
@@ -44,17 +43,16 @@ foldEffect f = foldJob (Fold.Effectful.hoist Job.perform f)
     pure fold
 
 See "Fold.Pure" -}
-foldPure :: Monad action =>
-    Fold item product
+foldPure :: Fold item product
     -> ConsumerPlus up action item product
 foldPure f = foldJob (Fold.Effectful.fold f)
 
 {-| Consumes all items and returns them as a list -}
-toList :: forall up action item. Monad action =>
+toList :: forall up action item.
     ConsumerPlus up action item [item]
 toList = foldPure Fold.Pure.list
 
 {-| Like 'toList', but discards the results -}
-run :: forall up action item. Monad action =>
+run :: forall up action item.
     ConsumerPlus up action item ()
 run = foldPure (pure ())
