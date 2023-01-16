@@ -1,0 +1,7 @@
+*.yaml
+*.local
+*.freeze
+result
+result-*
+dist
+dist-*
