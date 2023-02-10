@@ -1,3 +1,7 @@
+### 0.0.1.2 (2023-02-10)
+
+Raise `integer-types` version to `0.1`
+
 ### 0.0.1.1 (2023-01-16)
 
 Add more test cases
