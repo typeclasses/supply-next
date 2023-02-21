@@ -14,7 +14,6 @@ sourceOverrides = haskell.lib.packageSourceOverrides {
 };
 
 depOverrides = new: old: {
-    gambler = new.callPackage ./nix/gambler.nix {};
     integer-types = new.callPackage ./nix/integer-types.nix {};
     quaalude = new.callPackage ./nix/quaalude.nix {};
     supply-chain = new.callPackage ./nix/supply-chain.nix {};
@@ -22,11 +21,23 @@ depOverrides = new: old: {
 };
 
 ghc."9.2" = nixos-22-11.haskell.packages.ghc92.override (old: {
-    overrides = combineOverrides old [ sourceOverrides depOverrides ];
+    overrides = combineOverrides old [
+        sourceOverrides
+        depOverrides
+        (new: old: {
+            gambler = new.callPackage ./nix/gambler-0.1.0.0.nix {};
+        })
+    ];
 });
 
 ghc."9.4" = nixos-unstable.haskell.packages.ghc94.override (old: {
-    overrides = combineOverrides old [ sourceOverrides depOverrides ];
+    overrides = combineOverrides old [
+        sourceOverrides
+        depOverrides
+        (new: old: {
+            gambler = new.callPackage ./nix/gambler-0.0.1.0.nix {};
+        })
+    ];
 });
 
 in
