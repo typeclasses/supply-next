@@ -1,8 +1,8 @@
 { mkDerivation, base, hspec, lib }:
 mkDerivation {
   pname = "gambler";
-  version = "0.0.1.0";
-  sha256 = "64ef60ac09ecaa559517ced51e7743d29cb433611594a076b9a18bfc54b68302";
+  version = "0.2.0.0";
+  sha256 = "1ffa12f2ba25ed8ff4a57a36ef6ef67d2a9d7275958a827e025851cec88b2343";
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base hspec ];
   description = "Composable, streaming, and efficient left folds";
