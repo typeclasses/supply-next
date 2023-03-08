@@ -35,7 +35,7 @@ ghc."9.4" = nixos-unstable.haskell.packages.ghc94.override (old: {
         sourceOverrides
         depOverrides
         (new: old: {
-            gambler = new.callPackage ./nix/gambler-0.2.0.0.nix {};
+            gambler = new.callPackage ./nix/gambler-0.3.0.0.nix {};
         })
     ];
 });
